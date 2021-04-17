@@ -1,1 +1,0 @@
-# chuper-diplom-back-end
