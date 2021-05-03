@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserFacadeRepository extends JpaRepository<UserFacade,Long> {
+
+    UserFacade findByUserName(String userName);
+
 }

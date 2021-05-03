@@ -7,8 +7,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,7 +15,7 @@ public class Account {
     @OneToOne
     private UserFacade userFacade;
 
-    private Boolean isHost = false;
+    private Boolean isHost;
 
     @OneToOne
     private Accommodation accommodation;
@@ -29,5 +27,53 @@ public class Account {
     private List<Feedback> feedbackList;
 
     public Account() {
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public UserFacade getUserFacade() {
+        return userFacade;
+    }
+
+    public void setUserFacade(UserFacade userFacade) {
+        this.userFacade = userFacade;
+    }
+
+    public Boolean getHost() {
+        return isHost;
+    }
+
+    public void setHost(Boolean host) {
+        isHost = host;
+    }
+
+    public Accommodation getAccommodation() {
+        return accommodation;
+    }
+
+    public void setAccommodation(Accommodation accommodation) {
+        this.accommodation = accommodation;
+    }
+
+    public List<RentalRecord> getRentalRecordList() {
+        return rentalRecordList;
+    }
+
+    public void setRentalRecordList(List<RentalRecord> rentalRecordList) {
+        this.rentalRecordList = rentalRecordList;
+    }
+
+    public List<Feedback> getFeedbackList() {
+        return feedbackList;
+    }
+
+    public void setFeedbackList(List<Feedback> feedbackList) {
+        this.feedbackList = feedbackList;
     }
 }
