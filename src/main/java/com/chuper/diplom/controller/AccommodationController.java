@@ -6,7 +6,9 @@ import com.chuper.diplom.service.AccommodationService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
+import java.util.*;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 
@@ -50,8 +52,8 @@ public class AccommodationController {
         return accommodationService.uploadPhoto(id,file);
     }
 
-    @GetMapping("/searchBySubString")
-    public AccommodationDto getBySubString(@RequestParam(name = "subString") String subString){
-
+    @PostMapping("/searchBySubString")
+    public List<AccommodationDto> getBySubString(@RequestParam(name = "subString") String subString){
+        return accommodationService.searchBySubString(subString);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 public interface AccommodationService {
     AccommodationDto initAccommodation(String name, String type);
@@ -23,5 +24,5 @@ public interface AccommodationService {
                                              BigDecimal price);
 
     AccommodationDto uploadPhoto(Long id, MultipartFile file) throws IOException, GeneralSecurityException;
-    AccommodationDto searchBySubString(String string);
+    List<AccommodationDto> searchBySubString(String string);
 }

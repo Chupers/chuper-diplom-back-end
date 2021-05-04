@@ -28,6 +28,7 @@ public class GoogleDriveService {
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIAL_FILE_PATH = "/client_secret2.json";
     public static  String GOOGLE_PATH = "https://drive.google.com/uc?export=view&id=";
+    public static String FOLDER_ID = "1oQHn_ADN8r8H_8C64gy8galCwd8FZvIy";
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException{
         InputStream inputStream = GoogleDriveService.class.getResourceAsStream(CREDENTIAL_FILE_PATH);
         if(inputStream == null){
@@ -51,6 +52,7 @@ public class GoogleDriveService {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
         com.google.api.services.drive.model.File file = new com.google.api.services.drive.model.File();
+        file.setParents(Collections.singletonList(FOLDER_ID));
         file.setName(multipart.getOriginalFilename());
         File convFile = new File(multipart.getOriginalFilename());
         FileOutputStream fileOutputStream = new FileOutputStream(convFile);

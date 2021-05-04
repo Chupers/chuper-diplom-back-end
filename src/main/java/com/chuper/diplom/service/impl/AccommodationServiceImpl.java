@@ -3,20 +3,25 @@ package com.chuper.diplom.service.impl;
 import com.chuper.diplom.entity.Accommodation;
 import com.chuper.diplom.entity.AccommodationInfo;
 import com.chuper.diplom.entity.Account;
+import com.chuper.diplom.entity.QAccommodationInfo;
 import com.chuper.diplom.entity.dto.AccommodationDto;
 import com.chuper.diplom.repository.AccommodationCharacteristicRepository;
+import com.chuper.diplom.repository.AccommodationInfoJQLRepository;
 import com.chuper.diplom.repository.AccommodationInfoRepository;
 import com.chuper.diplom.repository.AccommodationRepository;
 import com.chuper.diplom.service.AccommodationService;
 import com.chuper.diplom.service.AccountService;
 import com.chuper.diplom.service.google.GoogleDriveService;
+import com.google.api.client.util.Lists;
 import org.dozer.DozerBeanMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.util.stream.Collectors;
 
 @Service
 public class AccommodationServiceImpl implements AccommodationService {
@@ -51,6 +56,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         accommodationInfo = accommodationInfoRepository.save(accommodationInfo);
         accommodation.setAccommodationInfo(accommodationInfo);
         account.setAccommodation(accommodation);
+        accountService.saveAccount(account);
         return  mapper.map(accommodationRepository.save(accommodation),AccommodationDto.class);
     }
 
@@ -72,6 +78,9 @@ public class AccommodationServiceImpl implements AccommodationService {
         accommodationInfo.setRoomCount(roomCount);
         accommodationInfo.setAddress(street);
         accommodationInfoRepository.save(accommodationInfo);
+        Accommodation accommodation = accommodationRepository.save(accommodationInfo.getAccommodation());
+        accommodation.setAvailable(true);
+        accommodationRepository.save(accommodation);
     }
 
     @Override
@@ -84,8 +93,18 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     @Override
-    public AccommodationDto searchBySubString(String string) {
-        return null;
+    public List<AccommodationDto> searchBySubString(String string) {
+        List<AccommodationInfo> accommodationInfos = Lists.newArrayList(accommodationInfoRepository.findAll(QAccommodationInfo.accommodationInfo.address.containsIgnoreCase(string)
+                .or(QAccommodationInfo.accommodationInfo.city.containsIgnoreCase(string)
+                        .or(QAccommodationInfo.accommodationInfo.country.containsIgnoreCase(string))
+                        .or(QAccommodationInfo.accommodationInfo.name.containsIgnoreCase(string))
+                )));
+        List<AccommodationDto> accommodationDtoList = Lists.newArrayList();
+        accommodationInfos = accommodationInfos.stream().filter(accommodationInfo -> accommodationInfo.getAccommodation().getAvailable()).collect(Collectors.toList());
+        for (AccommodationInfo accommodationInfo: accommodationInfos) {
+            accommodationDtoList.add(mapper.map(accommodationInfo.getAccommodation(),AccommodationDto.class));
+        }
+        return accommodationDtoList;
     }
 
 
