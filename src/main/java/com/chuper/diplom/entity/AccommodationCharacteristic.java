@@ -22,4 +22,10 @@ public class AccommodationCharacteristic {
 
     public AccommodationCharacteristic() {
     }
+
+    public AccommodationCharacteristic(Accommodation accommodation, String iconName, String characteristicText) {
+        this.accommodation = accommodation;
+        this.iconName = iconName;
+        this.characteristicText = characteristicText;
+    }
 }

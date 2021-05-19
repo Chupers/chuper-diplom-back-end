@@ -25,4 +25,8 @@ public interface AccommodationService {
 
     AccommodationDto uploadPhoto(Long id, MultipartFile file) throws IOException, GeneralSecurityException;
     List<AccommodationDto> searchBySubString(String string);
+    AccommodationDto findAccommodationById(Long id);
+    AccommodationDto addCharacteristic(Long id, String icon, String text);
+    Accommodation getById(Long id);
+    AccommodationDto saveAccommodation(Accommodation accommodation);
 }

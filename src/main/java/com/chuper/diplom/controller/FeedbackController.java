@@ -1,9 +1,8 @@
 package com.chuper.diplom.controller;
 
+import com.chuper.diplom.entity.dto.AccommodationDto;
 import com.chuper.diplom.service.FeedbackService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:4200",maxAge = 10000)
 @RestController
@@ -14,5 +13,12 @@ public class FeedbackController {
 
     public FeedbackController(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
+    }
+
+    @PostMapping("/addFeedback")
+    public AccommodationDto addFeedback(@RequestParam(name = "id") Long id,
+                                        @RequestParam(name = "text") String text,
+                                        @RequestParam(name = "countStar") Integer countStar){
+        return feedbackService.addFeedback(id, text, countStar);
     }
 }

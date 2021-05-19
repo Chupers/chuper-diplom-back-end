@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -19,6 +20,9 @@ public class Account {
 
     @OneToOne
     private Accommodation accommodation;
+
+    @ElementCollection
+    private Set<Long> favoriteAccommodationId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "guestAccount")
     private List<RentalRecord> rentalRecordList;
@@ -75,5 +79,13 @@ public class Account {
 
     public void setFeedbackList(List<Feedback> feedbackList) {
         this.feedbackList = feedbackList;
+    }
+
+    public Set<Long> getFavoriteAccommodationId() {
+        return favoriteAccommodationId;
+    }
+
+    public void setFavoriteAccommodationId(Set<Long> favoriteAccommodationId) {
+        this.favoriteAccommodationId = favoriteAccommodationId;
     }
 }

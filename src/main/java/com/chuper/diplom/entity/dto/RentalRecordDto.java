@@ -3,13 +3,15 @@ package com.chuper.diplom.entity.dto;
 import com.chuper.diplom.entity.Accommodation;
 import com.chuper.diplom.entity.Account;
 import com.chuper.diplom.entity.enums.RentRecordStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 public class RentalRecordDto {
     private Long rentalRecordId;
-    private Timestamp checkInDate;
-    private Timestamp checkOutDate;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
     private RentRecordStatus recordStatus;
 
     public RentalRecordDto() {
@@ -25,19 +27,19 @@ public class RentalRecordDto {
 
 
 
-    public Timestamp getCheckInDate() {
+    public LocalDate getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(Timestamp checkInDate) {
+    public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
     }
 
-    public Timestamp getCheckOutDate() {
+    public LocalDate getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(Timestamp checkOutDate) {
+    public void setCheckOutDate(LocalDate checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 

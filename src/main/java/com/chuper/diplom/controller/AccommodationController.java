@@ -56,4 +56,16 @@ public class AccommodationController {
     public List<AccommodationDto> getBySubString(@RequestParam(name = "subString") String subString){
         return accommodationService.searchBySubString(subString);
     }
+
+    @PutMapping("/addCharacteristic")
+    public AccommodationDto addCharacteristic(@RequestParam(name = "id") Long id,
+                                              @RequestParam(name = "text") String text,
+                                              @RequestParam(name = "icon") String icon){
+       return accommodationService.addCharacteristic(id,icon,text);
+    }
+
+    @PostMapping("/findById")
+    public AccommodationDto getById(@RequestParam Long id){
+        return accommodationService.findAccommodationById(id);
+    }
 }

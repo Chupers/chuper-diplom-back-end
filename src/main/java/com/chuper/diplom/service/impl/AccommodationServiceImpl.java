@@ -1,9 +1,7 @@
 package com.chuper.diplom.service.impl;
 
-import com.chuper.diplom.entity.Accommodation;
-import com.chuper.diplom.entity.AccommodationInfo;
-import com.chuper.diplom.entity.Account;
-import com.chuper.diplom.entity.QAccommodationInfo;
+import com.chuper.diplom.entity.*;
+import com.chuper.diplom.entity.dto.AccommodationCharacteristicDto;
 import com.chuper.diplom.entity.dto.AccommodationDto;
 import com.chuper.diplom.repository.AccommodationCharacteristicRepository;
 import com.chuper.diplom.repository.AccommodationInfoJQLRepository;
@@ -105,6 +103,33 @@ public class AccommodationServiceImpl implements AccommodationService {
             accommodationDtoList.add(mapper.map(accommodationInfo.getAccommodation(),AccommodationDto.class));
         }
         return accommodationDtoList;
+    }
+
+    @Override
+    public AccommodationDto findAccommodationById(Long id) {
+        Accommodation accommodation = accommodationRepository.getOne(id);
+        //TODO: check null
+        return mapper.map(accommodation,AccommodationDto.class);
+
+    }
+
+    @Override
+    public AccommodationDto addCharacteristic(Long id, String icon, String text) {
+        Accommodation accommodation = accommodationRepository.getOne(id);
+        AccommodationCharacteristic accommodationCharacteristic = new AccommodationCharacteristic(accommodation,icon,text);
+        accommodationCharacteristicRepository.save(accommodationCharacteristic);
+        accommodation.getAccommodationCharacteristicList().add(accommodationCharacteristic);
+        return mapper.map(accommodationRepository.save(accommodation), AccommodationDto.class);
+    }
+
+    @Override
+    public Accommodation getById(Long id) {
+        return accommodationRepository.getOne(id);
+    }
+
+    @Override
+    public AccommodationDto saveAccommodation(Accommodation accommodation) {
+        return mapper.map(accommodationRepository.save(accommodation),AccommodationDto.class);
     }
 
 

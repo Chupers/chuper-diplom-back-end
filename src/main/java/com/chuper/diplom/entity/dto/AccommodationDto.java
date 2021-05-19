@@ -8,9 +8,11 @@ import javax.persistence.OneToOne;
 import java.util.List;
 
 public class AccommodationDto {
+
     private Long accommodationId;
     private AccommodationInfoDto accommodationInfo;
     private List<AccommodationCharacteristicDto> accommodationCharacteristicList;
+    private List<FeedbackDto> feedbackList;
 
     public Long getAccommodationId() {
         return accommodationId;
@@ -34,5 +36,13 @@ public class AccommodationDto {
 
     public void setAccommodationCharacteristicList(List<AccommodationCharacteristicDto> accommodationCharacteristicList) {
         this.accommodationCharacteristicList = accommodationCharacteristicList;
+    }
+
+    public List<FeedbackDto> getFeedbackList() {
+        return feedbackList;
+    }
+
+    public void setFeedbackList(List<FeedbackDto> feedbackList) {
+        this.feedbackList = feedbackList;
     }
 }
