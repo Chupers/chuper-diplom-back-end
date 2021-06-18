@@ -1,16 +1,20 @@
 package com.chuper.diplom.controller;
 
-import com.chuper.diplom.entity.Accommodation;
 import com.chuper.diplom.entity.dto.AccommodationDto;
 import com.chuper.diplom.service.AccommodationService;
+import com.chuper.diplom.service.RentalRecordService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200",maxAge = 10000)
 @RestController
@@ -18,9 +22,11 @@ import java.security.GeneralSecurityException;
 public class AccommodationController {
 
     private final AccommodationService accommodationService;
+    private final RentalRecordService rentalRecordService;
 
-    public AccommodationController(AccommodationService accommodationService) {
+    public AccommodationController(AccommodationService accommodationService, RentalRecordService rentalRecordService) {
         this.accommodationService = accommodationService;
+        this.rentalRecordService = rentalRecordService;
     }
 
     @PostMapping("/init")
@@ -57,7 +63,19 @@ public class AccommodationController {
         return accommodationService.searchBySubString(subString);
     }
 
+    @PostMapping("/extraSearch")
+    public List<AccommodationDto> search(@RequestParam(name = "subString") String subString,
+                                         @RequestParam(name = "minPrice") BigInteger minPrice,
+                                         @RequestParam(name = "maxPrice") BigInteger maxPrice,
+                                         @RequestParam(name = "type") String type,
+                                         @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("startDate") LocalDate startDate,
+                                         @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("endDate") LocalDate endDate){
+        return accommodationService.findAccommodation(subString,minPrice,maxPrice,type,startDate,endDate).stream()
+                .filter(accommodationDto -> rentalRecordService.checkRentalAvailability(accommodationDto.getAccommodationId(),startDate,endDate)).collect(Collectors.toList());
+    }
+
     @PutMapping("/addCharacteristic")
+
     public AccommodationDto addCharacteristic(@RequestParam(name = "id") Long id,
                                               @RequestParam(name = "text") String text,
                                               @RequestParam(name = "icon") String icon){
@@ -67,5 +85,16 @@ public class AccommodationController {
     @PostMapping("/findById")
     public AccommodationDto getById(@RequestParam Long id){
         return accommodationService.findAccommodationById(id);
+    }
+
+    @PostMapping("/markFavorite")
+    public AccommodationDto markFavorite(@RequestParam Long id){
+        return accommodationService.markFavoriteAccommodation(id);
+
+    }
+
+    @GetMapping("/getFavorite")
+    public List<AccommodationDto> getFavoriteAccommodation(){
+        return accommodationService.getFavoriteAccommodation();
     }
 }

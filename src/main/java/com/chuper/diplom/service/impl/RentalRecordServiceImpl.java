@@ -35,7 +35,7 @@ public class RentalRecordServiceImpl implements RentalRecordService {
 
     /*
     * Returns true if date period is free
-    * */
+    */
     @Override
     public Boolean checkRentalAvailability(Long flatId, LocalDate startDate, LocalDate endDate) {
         List<RentalRecord> rentalRecords = rentalRecordRepository.findByAccommodationAccommodationId(flatId);
@@ -50,11 +50,33 @@ public class RentalRecordServiceImpl implements RentalRecordService {
 
     @Override
     public RentalRecord saveRentalRecord(Long accommodationId, LocalDate checkInDate, LocalDate checkOutDate) {
-        Accommodation accommodation = accommodationService.getById(accommodationId);
-        Account activeAccount = accountService.getActiveAccount();
-        RentalRecord rentalRecord = new RentalRecord(accommodation, activeAccount, checkInDate, checkOutDate);
+        if(checkRentalAvailability(accommodationId,checkInDate,checkOutDate)){
+            Accommodation accommodation = accommodationService.getById(accommodationId);
+            Account activeAccount = accountService.getActiveAccount();
+            RentalRecord rentalRecord = new RentalRecord(accommodation, activeAccount, checkInDate, checkOutDate);
+            rentalRecord.setRecordStatus(RentRecordStatus.NOT_PAID);
+            rentalRecord.setAccommodationName(accommodation.getAccommodationInfo().getName());
+            rentalRecord = rentalRecordRepository.save(rentalRecord);
+            return rentalRecord;
+        }
+        return null;
+    }
+
+    @Override
+    public List<RentalRecord> getRentalRecordByActiveUser() {
+        return accountService.getActiveAccount().getRentalRecordList();
+    }
+
+    @Override
+    public List<RentalRecord> getRentalByAccommodationId() {
+        return rentalRecordRepository.findByAccommodationAccommodationId(
+                accountService.getActiveAccount().getAccommodation().getAccommodationId());
+    }
+
+    @Override
+    public void confirmRental(Long id) {
+        RentalRecord rentalRecord = rentalRecordRepository.getOne(id);
         rentalRecord.setRecordStatus(RentRecordStatus.CONFIRM);
-        rentalRecord = rentalRecordRepository.save(rentalRecord);
-        return rentalRecord;
+        rentalRecordRepository.save(rentalRecord);
     }
 }

@@ -1,5 +1,6 @@
 package com.chuper.diplom.controller;
 
+import com.chuper.diplom.entity.Review;
 import com.chuper.diplom.entity.dto.AccommodationDto;
 import com.chuper.diplom.service.FeedbackService;
 import org.springframework.web.bind.annotation.*;
@@ -20,5 +21,11 @@ public class FeedbackController {
                                         @RequestParam(name = "text") String text,
                                         @RequestParam(name = "countStar") Integer countStar){
         return feedbackService.addFeedback(id, text, countStar);
+    }
+
+    @PostMapping("/getReviewInfo")
+    public Review getReviewByAccommodationId(@RequestParam (name = "id") Long id){
+        Review review = feedbackService.getReviewByAccommodationId(id);
+        return review;
     }
 }

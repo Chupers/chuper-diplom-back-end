@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RentalRecordRepository extends JpaRepository<RentalRecord,Long> {
-    List<RentalRecord> findByAccommodationAccommodationId(Long accomodationId);
+    List<RentalRecord> findByAccommodationAccommodationId(Long id);
 }

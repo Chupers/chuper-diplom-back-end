@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200",maxAge = 10000)
 @RestController
@@ -29,9 +30,24 @@ public class RentalRecordController {
     }
 
     @PostMapping()
-    public RentalRecord addRentalRecord(@RequestParam("accommodationId") Long accommodationId,
-                                           @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("checkInDate") LocalDate checkInDate,
-                                           @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("checkOutDate") LocalDate checkOutDate) {
+    public RentalRecord addRentalRecord(@RequestParam("id") Long accommodationId,
+                                           @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("startDate") LocalDate checkInDate,
+                                           @DateTimeFormat(pattern = "MM.dd.yyyy") @RequestParam("endDate") LocalDate checkOutDate) {
         return rentalRecordService.saveRentalRecord(accommodationId, checkInDate, checkOutDate);
+    }
+
+    @GetMapping()
+    public List<RentalRecord> getRentalRecordByActiveUser(){
+        return rentalRecordService.getRentalRecordByActiveUser();
+    }
+
+    @GetMapping("/getRentalByAccommodationId")
+    public List<RentalRecord> getRentalBcheckIsFavoriteyAccommodationId(){
+        return rentalRecordService.getRentalByAccommodationId();
+    }
+
+    @PostMapping("/confirmRental")
+    public void confirmRental(@RequestParam(name = "id") Long id){
+        rentalRecordService.confirmRental(id);
     }
 }

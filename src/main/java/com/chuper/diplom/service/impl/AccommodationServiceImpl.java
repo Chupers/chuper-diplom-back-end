@@ -1,24 +1,28 @@
 package com.chuper.diplom.service.impl;
 
 import com.chuper.diplom.entity.*;
-import com.chuper.diplom.entity.dto.AccommodationCharacteristicDto;
 import com.chuper.diplom.entity.dto.AccommodationDto;
+import com.chuper.diplom.entity.dto.FeedbackDto;
 import com.chuper.diplom.repository.AccommodationCharacteristicRepository;
-import com.chuper.diplom.repository.AccommodationInfoJQLRepository;
 import com.chuper.diplom.repository.AccommodationInfoRepository;
 import com.chuper.diplom.repository.AccommodationRepository;
 import com.chuper.diplom.service.AccommodationService;
 import com.chuper.diplom.service.AccountService;
+import com.chuper.diplom.service.RentalRecordService;
 import com.chuper.diplom.service.google.GoogleDriveService;
 import com.google.api.client.util.Lists;
 import org.dozer.DozerBeanMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,7 +104,10 @@ public class AccommodationServiceImpl implements AccommodationService {
         List<AccommodationDto> accommodationDtoList = Lists.newArrayList();
         accommodationInfos = accommodationInfos.stream().filter(accommodationInfo -> accommodationInfo.getAccommodation().getAvailable()).collect(Collectors.toList());
         for (AccommodationInfo accommodationInfo: accommodationInfos) {
-            accommodationDtoList.add(mapper.map(accommodationInfo.getAccommodation(),AccommodationDto.class));
+            AccommodationDto accommodationDto = mapper.map(accommodationInfo.getAccommodation(),AccommodationDto.class);
+            getReviewByAccommodationId(accommodationDto);
+            accommodationDto.setFavorite(checkIsFavorite(accommodationInfo.getAccommodation().getAccommodationId()));
+            accommodationDtoList.add(accommodationDto);
         }
         return accommodationDtoList;
     }
@@ -108,9 +115,33 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Override
     public AccommodationDto findAccommodationById(Long id) {
         Accommodation accommodation = accommodationRepository.getOne(id);
-        //TODO: check null
-        return mapper.map(accommodation,AccommodationDto.class);
+        AccommodationDto accommodationDto = mapper.map(accommodation,AccommodationDto.class);
+        accommodationDto.setFavorite(checkIsFavorite(accommodation.getAccommodationId()));
+        getReviewByAccommodationId(accommodationDto);
+        return accommodationDto;
 
+    }
+    public void getReviewByAccommodationId(AccommodationDto accommodation) {
+        List<FeedbackDto> feedbackList = accommodation.getFeedbackList();
+        if(feedbackList == null || feedbackList.isEmpty()){
+            accommodation.setRating((double) 0);
+            accommodation.setCountReview(0);
+        }
+        int countReview = feedbackList.size();
+        AtomicReference<Integer> summaryStarCount = new AtomicReference<>(0);
+        feedbackList.forEach(feedbackDto -> summaryStarCount.updateAndGet(v -> v + feedbackDto.getCountStar()));
+        accommodation.setCountReview(countReview);
+        double value = ( (double) summaryStarCount.get() / (double) countReview);
+        double scale = Math.pow(10,2);
+        accommodation.setRating(Math.ceil(value * scale) / scale);
+    }
+
+    private boolean checkIsFavorite(Long id){
+        Account account = accountService.getActiveAccount();
+
+        return  account!= null &&
+                account.getFavoriteAccommodationId()!= null &&
+                account.getFavoriteAccommodationId().contains(id);
     }
 
     @Override
@@ -130,6 +161,42 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Override
     public AccommodationDto saveAccommodation(Accommodation accommodation) {
         return mapper.map(accommodationRepository.save(accommodation),AccommodationDto.class);
+    }
+
+    @Override
+    public AccommodationDto markFavoriteAccommodation(Long id) {
+        Account account = accountService.getActiveAccount();
+        if(account.getFavoriteAccommodationId()!= null
+                && !account.getFavoriteAccommodationId().remove(id)){
+            account.getFavoriteAccommodationId().add(id);
+        }
+        accountService.saveAccount(account);
+        return findAccommodationById(id);
+    }
+
+    @Override
+    public List<AccommodationDto> getFavoriteAccommodation() {
+        return accountService.getActiveAccount().getFavoriteAccommodationId()
+                .stream()
+                .map(this::findAccommodationById)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AccommodationDto> findAccommodation(String subString, BigInteger minPrice, BigInteger maxPrice, String type, LocalDate startDate, LocalDate endDate) {
+        List<AccommodationDto> accommodationDtoList = searchBySubString(subString);
+        if(accommodationDtoList == null){
+            return null;
+        }
+
+        accommodationDtoList = accommodationDtoList.stream()
+                .filter(accommodationDto -> accommodationDto.getAccommodationInfo().getPricePerDay().toBigInteger().compareTo(maxPrice) <= 0 &&
+                        accommodationDto.getAccommodationInfo().getPricePerDay().toBigInteger().compareTo(minPrice) >= 0)
+                .filter(accommodationDto -> accommodationDto.getAccommodationInfo().getAccommodationType().toUpperCase().equals(type))
+                .collect(Collectors.toList());
+
+        return accommodationDtoList;
+
     }
 
 

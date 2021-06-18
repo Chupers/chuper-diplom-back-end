@@ -1,5 +1,6 @@
 package com.chuper.diplom.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,18 +17,23 @@ public class Accommodation {
     @OneToOne
     private AccommodationInfo accommodationInfo;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<Feedback> feedbackList;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<AccommodationCharacteristic> accommodationCharacteristicList;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation")
     private List<RentalRecord> rentalRecordList;
 
+    @JsonIgnore
     @OneToOne
     private Account account;
 
+    @JsonIgnore
     private Boolean isAvailable;
 
     public Accommodation() {

@@ -1,5 +1,6 @@
 package com.chuper.diplom.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class AccommodationInfo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long accommodationInfoId;
 
+    @JsonIgnore
     @OneToOne
     private Accommodation accommodation;
 
@@ -31,6 +33,7 @@ public class AccommodationInfo {
     @NotNull
     private String address;
 
+    @JsonIgnore
     @ElementCollection
     private Set<String> photo;
 

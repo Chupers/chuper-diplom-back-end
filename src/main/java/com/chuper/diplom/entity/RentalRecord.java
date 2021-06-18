@@ -28,6 +28,8 @@ public class RentalRecord {
 
     private LocalDate checkOutDate;
 
+    private String accommodationName;
+
     private RentRecordStatus recordStatus;
 
     public RentalRecord() {
@@ -42,6 +44,14 @@ public class RentalRecord {
 
     public Long getRentalRecordId() {
         return rentalRecordId;
+    }
+
+    public String getAccommodationName() {
+        return accommodationName;
+    }
+
+    public void setAccommodationName(String accommodationName) {
+        this.accommodationName = accommodationName;
     }
 
     public void setRentalRecordId(Long rentalRecordId) {

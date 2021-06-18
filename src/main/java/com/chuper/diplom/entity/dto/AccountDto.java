@@ -11,7 +11,6 @@ import java.util.List;
 public class AccountDto {
     private Long accountId;
     private Boolean isHost;
-    private List<RentalRecordDto> rentalRecordList;
     private List<FeedbackDto> feedbackList;
     private UserFacadeDto userFacade;
 
@@ -37,14 +36,6 @@ public class AccountDto {
 
     public void setHost(Boolean host) {
         isHost = host;
-    }
-
-    public List<RentalRecordDto> getRentalRecordList() {
-        return rentalRecordList;
-    }
-
-    public void setRentalRecordList(List<RentalRecordDto> rentalRecordList) {
-        this.rentalRecordList = rentalRecordList;
     }
 
     public List<FeedbackDto> getFeedbackList() {
